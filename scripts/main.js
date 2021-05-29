@@ -47,7 +47,7 @@ class Particle {
     draw() {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-        ctx.fillStyle = '#8c5523';
+        ctx.fillStyle = this.color;
         ctx.fill();
     }
 
@@ -102,11 +102,11 @@ let particles;
 function init() {
     particles = [];
     // create particles based on the size of the canvas
-    const particleCountMultiplier = 3;
+    const particleCountMultiplier = 2;
     let numberOfParticles = ((canvas.width * canvas.height) / 9000) * particleCountMultiplier;
 
     for (let i = 0; i < numberOfParticles; i++) {
-        let size = (Math.random() * 5) + 1;
+        let size = (Math.random() * 5) + 3;
         let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
         let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
         let directionX = (Math.random() * 5) - 2.5;
@@ -119,7 +119,7 @@ function init() {
 
 // check if particles are close enough to each other to draw a line between them
 function connect() {
-    const opacityScaler = 10000;
+    const opacityScaler = 5000;
     for (let a = 0; a < particles.length; a++) {
         for (let b = 0; b < particles.length; b++) {
             if(a === b) continue;
@@ -137,6 +137,15 @@ function connect() {
                 ctx.moveTo(particles[a].x, particles[a].y);
                 ctx.lineTo(particles[b].x, particles[b].y);
                 ctx.stroke();
+            }
+
+            if(distance < particles[a].size + particles[b].size) {
+                particles[a].directionX = -particles[a].directionX;
+                particles[a].directionY = -particles[a].directionY;
+                particles[b].directionX = -particles[b].directionX;
+                particles[b].directionY = -particles[b].directionY;
+                particles[a].update();
+                particles[b].update();
             }
         }
     }
